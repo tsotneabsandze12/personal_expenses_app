@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:personal_expenses_app/presentation/views/home_view.dart';
 import 'package:personal_expenses_app/presentation/views/login_view.dart';
 import 'package:provider/provider.dart';
 import 'domain/providers/state_provider.dart';
@@ -29,7 +30,9 @@ class MyApp extends StatelessWidget {
         ),
       ),
       initialRoute: LoginView.routeName,
-      // routes: {PlanetScreen.routeName: (context) => const PlanetScreen()},
+       routes: {
+        HomeView.routeName: (context) => const HomeView(),
+       },
       home: const LoginView(),
     );
   }

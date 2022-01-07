@@ -3,7 +3,7 @@ import 'package:http/http.dart';
 import 'package:personal_expenses_app/domain/models/expense.dart';
 
 class ApiService {
-  static String baseUri = 'http://127.0.0.1:8080/';
+  static String baseUri = 'http://10.0.2.2:8080/';
 
   static Future<List<Expense>> getExpenses() async {
     var response = await get(Uri.parse(baseUri + 'expenses'));

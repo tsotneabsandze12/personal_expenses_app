@@ -8,6 +8,7 @@ class Btn extends StatelessWidget {
   final double fontSize;
   final Color fontColor;
   final double radius;
+  final callback;
 
   const Btn({
     Key? key,
@@ -18,6 +19,7 @@ class Btn extends StatelessWidget {
     required this.fontSize,
     required this.fontColor,
     required this.radius,
+    this.callback,
   }) : super(key: key);
 
   @override
@@ -34,7 +36,9 @@ class Btn extends StatelessWidget {
           ),
           primary: color,
         ),
-        onPressed: () {},
+        onPressed: () {
+          callback();
+        },
         child: Center(
           child: Text(
             text,
