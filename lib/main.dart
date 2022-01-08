@@ -1,3 +1,4 @@
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:personal_expenses_app/presentation/views/home_view.dart';
@@ -7,10 +8,14 @@ import 'domain/providers/state_provider.dart';
 
 void main() {
   runApp(
+    // DevicePreview(
+    //   enabled: true,
+    //builder: (BuildContext context) =>
     ChangeNotifierProvider(
       create: (ctx) => StateProvider(),
       child: const MyApp(),
     ),
+    // ),
   );
 }
 
@@ -22,17 +27,27 @@ class MyApp extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return MaterialApp(
-      title: 'Personal Expenses Aoo',
+      // useInheritedMediaQuery: true,
+      // locale: DevicePreview.locale(context),
+      // builder: DevicePreview.appBuilder,
+      title: 'Personal Expenses App',
       theme: ThemeData(
         primaryColor: const Color(0xffcbefef),
-        textTheme: GoogleFonts.latoTextTheme(textTheme).copyWith(
-          bodyText1: GoogleFonts.poppins(textStyle: textTheme.bodyText1),
+        textTheme: GoogleFonts.latoTextTheme(
+          Theme.of(context)
+              .textTheme, // If this is not set, then ThemeData.light().textTheme is used.
+        ).copyWith(
+          bodyText1: GoogleFonts.poppins(),
+          bodyText2: GoogleFonts.poppins(),
+          subtitle1: GoogleFonts.poppins(),
+          subtitle2: GoogleFonts.poppins(),
+          button: GoogleFonts.poppins(),
         ),
       ),
       initialRoute: LoginView.routeName,
-       routes: {
+      routes: {
         HomeView.routeName: (context) => const HomeView(),
-       },
+      },
       home: const LoginView(),
     );
   }

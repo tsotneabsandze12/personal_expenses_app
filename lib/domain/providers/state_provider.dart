@@ -1,10 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:personal_expenses_app/domain/models/expense.dart';
-
+import 'package:darq/darq.dart';
+import 'package:personal_expenses_app/infrastructure/services/api_service.dart';
 
 class StateProvider extends ChangeNotifier {
   bool _isProcessing = true;
   List<Expense> _expensesList = [];
+  num _totalExpenses = 0.0;
+
+  num get totalExpenses => _totalExpenses;
 
   bool get isProcessing => _isProcessing;
 
@@ -13,9 +17,48 @@ class StateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  setExpensesList(List<Expense> list, {bool notify = true}) {
-    _expensesList = list;
-    if (notify) notifyListeners();
+  setExpensesList({bool notify = true}) async{
+    var apiResponse = await ApiService.getExpenses();
+    if(apiResponse.isSuccessful){
+      _expensesList = apiResponse.data!;
+      if (notify) notifyListeners();
+    }
+  }
+
+  setTotalExpenses({bool notify = true}) {
+    if(_expensesList.isNotEmpty){
+      _totalExpenses = _expensesList.sum((x) => x.amount);
+      if (notify) notifyListeners();
+    }else{
+      _totalExpenses = 0;
+      if (notify) notifyListeners();
+    }
+  }
+
+  addExpense(Expense expense, {bool notify = true}) async {
+    var apiResponse = await ApiService.addExpense(expense);
+    if(apiResponse.isSuccessful){
+      _expensesList.add(apiResponse.data!);
+      if (notify) notifyListeners();
+    }
+  }
+
+  deleteExpense(int id, {bool notify = true}) async{
+    var apiResponse = await ApiService.deleteExpense(id);
+    if(apiResponse.isSuccessful){
+      _expensesList.removeWhere((e) => e.id == id);
+      if (notify) notifyListeners();
+    }
+
+  }
+
+  updateExpense(Expense expense, {bool notify = true}) async {
+    var apiResponse = await ApiService.updateExpense(expense);
+    if(apiResponse.isSuccessful){
+      int idx = _expensesList.indexWhere((e) => e.id == expense.id);
+      _expensesList[idx] = expense;
+      if (notify) notifyListeners();
+    }
   }
 
   Expense getExpenseByIndex(int index) => _expensesList[index];

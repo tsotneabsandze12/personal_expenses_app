@@ -8,7 +8,7 @@ class Expense {
 
   int id;
   String expenseTitle;
-  int amount;
+  num amount;
   DateTime date;
 
   factory Expense.fromJson(Map<String, dynamic> json) =>
