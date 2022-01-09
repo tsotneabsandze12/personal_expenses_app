@@ -1,11 +1,14 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:personal_expenses_app/domain/Validators/form_validation_mixin.dart';
 import 'package:personal_expenses_app/domain/models/expense.dart';
 import 'package:personal_expenses_app/domain/providers/state_provider.dart';
-import 'package:personal_expenses_app/infrastructure/services/api_service.dart';
+import 'package:personal_expenses_app/presentation/widgets/btn.dart';
+import 'package:personal_expenses_app/presentation/widgets/field.dart';
 import 'package:personal_expenses_app/presentation/widgets/icon_btn.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+
 
 class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -15,7 +18,12 @@ class HomeView extends StatefulWidget {
   _HomeViewState createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _HomeViewState extends State<HomeView> with FormValidationMixin {
+  List<GlobalKey<FormState>> formKeys = [
+    GlobalKey<FormState>(),
+    GlobalKey<FormState>()
+  ];
+
   _getExpenses() async {
     var provider = Provider.of<StateProvider>(context, listen: false);
     await provider.setExpensesList(notify: false);
@@ -32,7 +40,6 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-
     AlertDialog deleteDialog(int id) {
       return AlertDialog(
         title: const Text('Accept?'),
@@ -40,8 +47,8 @@ class _HomeViewState extends State<HomeView> {
         actions: [
           TextButton(
             onPressed: () async {
-              await ApiService.deleteExpense(id);
-              Provider.of<StateProvider>(context, listen: false)
+              //await ApiService.deleteExpense(id);
+             await Provider.of<StateProvider>(context, listen: false)
                   .deleteExpense(id, notify: true);
               Navigator.of(context).pushNamed(HomeView.routeName);
             },
@@ -57,7 +64,154 @@ class _HomeViewState extends State<HomeView> {
       );
     }
 
-    Future<dynamic> showDetailsBottomSheet(Expense expense) {
+    showAddExpenseBottomSheet() {
+      Expense e = Expense
+        (id: 0,
+          expenseTitle: '',
+          amount: 0,
+          date: DateTime.now());
+      return showModalBottomSheet(
+        context: context,
+        builder: (context) => BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: Container(
+            padding: const EdgeInsets.all(15),
+            height: 360,
+            color: Theme.of(context).primaryColor,
+            child: Form(
+              key: formKeys[0],
+              child: Column(
+                children: [
+                  Flexible(
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      child: Field(
+                        type: TextInputType.number,
+                        hintText: 'Please enter expense ID',
+                        align: TextAlign.center,
+                        borderColor: Colors.grey,
+                        validator:
+                            (value) {
+                          if(isIdValid(value)){return null;}return 'invalid id';
+                        },
+                        onSaved: (val) {
+                          e.id = int.parse(val)
+                          ;
+                        },
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      child: Field(
+                        type: TextInputType.number,
+                        hintText: 'Please enter expense amount',
+                        borderColor: Colors.grey,
+                        align: TextAlign.center,
+                        validator: (value) {
+                          if(isAmountValid(value)){
+                            return null;
+                          }
+                          return 'invalid value';
+                        },
+                        onSaved: (val) {
+                          e.amount = num.parse(val);
+                        },
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      child: Field(
+                        type: TextInputType.text,
+                        hintText: 'Please enter expense title',
+                        borderColor: Colors.grey,
+                        align: TextAlign.center,
+                        validator: (String? value) {
+                          if (isTitleValid(value)) {
+                            return null;
+                          }
+                          return 'invalid value';
+                        },
+                        onSaved: (val) {
+                          //if (val != null)
+                            e.expenseTitle = val;
+                        },
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    child: Container(
+                      alignment: Alignment.bottomCenter,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Pick Date',
+                            style: TextStyle(
+                                color: Colors.black54,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18),
+                          ),
+                          Btn(
+                            text: 'Pick Date',
+                            width: 140,
+                            height: 40,
+                            color: const Color(0xff267b7b),
+                            fontSize: 18,
+                            fontColor: Colors.white,
+                            radius: 10,
+                            callback: () => {
+                              showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(3000),
+                              ).then(
+                                  (value) => { e.date = value ?? DateTime.now()}),
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    child: Container(
+                      alignment: Alignment.centerRight,
+                      child: Btn(
+                        text: 'ADD',
+                        width: 140,
+                        height: 40,
+                        color: const Color(0xff267b7b),
+                        fontSize: 18,
+                        fontColor: Colors.white,
+                        radius: 10,
+                        callback: () async => {
+                          if (formKeys[0].currentState!.validate())
+                            {
+                              formKeys[0].currentState!.save(),
+                        Provider.of<StateProvider>(context, listen: false)
+                              .addExpense(e),
+                        Navigator.of(context).pushNamed(HomeView.routeName)
+                            }
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    showEditExpenseBottomSheet() {}
+
+    showDetailsBottomSheet(Expense expense) {
       return showModalBottomSheet(
         context: context,
         backgroundColor: Colors.transparent,
@@ -151,7 +305,7 @@ class _HomeViewState extends State<HomeView> {
                                 color: Colors.white,
                                 size: 35,
                               ),
-                              callback: () => {},
+                              callback: () => {showEditExpenseBottomSheet()},
                             ),
                             CircularIconBtn(
                               padding: 20,
@@ -223,7 +377,9 @@ class _HomeViewState extends State<HomeView> {
               color: Colors.white,
               size: 30,
             ),
-            callback: () => {},
+            callback: () => {
+              showAddExpenseBottomSheet(),
+            },
           ),
         ),
       ),
@@ -247,8 +403,7 @@ class _HomeViewState extends State<HomeView> {
             child: Center(
               child: ListTile(
                 title: Text(
-                  "${num.parse(Provider.of<StateProvider>(context, listen: true).totalExpenses.toStringAsFixed(3))
-                      } \$",
+                  "${num.parse(Provider.of<StateProvider>(context, listen: true).totalExpenses.toStringAsFixed(3))} \$",
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -261,11 +416,10 @@ class _HomeViewState extends State<HomeView> {
         ),
       ),
     );
-    
-    Container bottomListView(StateProvider provider){
+
+    Container bottomListView(StateProvider provider) {
       return Container(
-        margin: const EdgeInsets.only(
-            left: 40.0, right: 40, bottom: 40),
+        margin: const EdgeInsets.only(left: 40.0, right: 40, bottom: 40),
         child: ListView.builder(
           itemCount: provider.listLength,
           scrollDirection: Axis.vertical,
@@ -287,28 +441,22 @@ class _HomeViewState extends State<HomeView> {
                       color: Color(0xff484848)),
                 ),
                 subtitle: Text(
-                  DateFormat.yMMMd()
-                      .format(expense.date)
-                      .toString(),
+                  DateFormat.yMMMd().format(expense.date).toString(),
                   style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xff484848)),
+                      fontWeight: FontWeight.bold, color: Color(0xff484848)),
                 ),
                 trailing: Text(
                   '${expense.amount} \$',
                   style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xff484848)),
+                      fontWeight: FontWeight.bold, color: Color(0xff484848)),
                 ),
                 onTap: () => {showDetailsBottomSheet(expense)},
-                onLongPress: () => {},
               ),
             );
           },
         ),
       );
     }
-    
 
     return Scaffold(
       body: SingleChildScrollView(
