@@ -1,6 +1,5 @@
 mixin FormValidationMixin {
-
-  bool isIdValid(String? id) {
+  static bool isIdValid(String? id) {
     if (id == null || id.isEmpty) {
       return false;
     }
@@ -10,7 +9,7 @@ mixin FormValidationMixin {
     return true;
   }
 
-  bool isAmountValid(String? amount) {
+  static bool isAmountValid(String? amount) {
     if (amount == null || amount.isEmpty) {
       return false;
     }
@@ -20,15 +19,17 @@ mixin FormValidationMixin {
     return true;
   }
 
-  bool isTitleValid(String? title) {
+  static bool isTitleValid(String? title) {
     if (title == null || title.isEmpty) {
       return false;
     }
     return true;
   }
 
-  bool isDateValid(String? date) {
-    if (date == null || date.isEmpty) {
+  static bool isDateValid(DateTime? date) {
+    if (date == null) {
+      return false;
+    }else if(date.isAfter(DateTime.now())){
       return false;
     }
     return true;

@@ -7,6 +7,7 @@ class Field extends StatelessWidget {
   final String? initialValue;
   final TextAlign? align;
   final Color borderColor;
+  final bool isEnabled;
   final validator;
   final onSaved;
 
@@ -17,34 +18,34 @@ class Field extends StatelessWidget {
     required this.type,
     this.initialValue,
     this.validator,
-     this.onSaved,
+    this.onSaved,
     this.align,
     required this.borderColor,
+    this.isEnabled = true,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       child: TextFormField(
         textAlign: align ?? TextAlign.start,
         textAlignVertical: TextAlignVertical.bottom,
+        initialValue: initialValue,
+        obscureText: isPassword ? true : false,
+        keyboardType: type,
+        enabled: isEnabled,
         style: const TextStyle(
             color: Colors.black54, fontWeight: FontWeight.bold, fontSize: 18),
         decoration: InputDecoration(
           hintText: hintText,
-          contentPadding: const EdgeInsets.only(top: 25),
           hintStyle: const TextStyle(
               color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 18),
-          enabledBorder:  UnderlineInputBorder(
-            borderSide: BorderSide(color: borderColor
-                ,width: 3),
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: borderColor, width: 3),
           ),
-
         ),
-        obscureText: isPassword ? true : false,
         validator: validator,
         onSaved: onSaved,
-        keyboardType: type,
       ),
     );
   }
