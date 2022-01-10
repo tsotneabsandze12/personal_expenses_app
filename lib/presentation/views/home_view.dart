@@ -30,6 +30,7 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+
     Widget upperBackGroundSection = Container(
       margin: const EdgeInsets.only(bottom: 100.0),
       alignment: Alignment.topCenter,
@@ -116,7 +117,6 @@ class _HomeViewState extends State<HomeView> {
         ),
       ),
     );
-
 
     Widget bottomListView = Container(
       margin: const EdgeInsets.only(left: 40.0, right: 40, bottom: 40),

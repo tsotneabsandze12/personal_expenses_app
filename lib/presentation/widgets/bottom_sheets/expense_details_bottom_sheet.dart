@@ -9,10 +9,13 @@ import 'edit_expense_bottom_sheet.dart';
 
 class ExpenseBottomSheetDetails extends StatefulWidget {
   final Expense expense;
-  const ExpenseBottomSheetDetails({Key? key, required this.expense}) : super(key: key);
+
+  const ExpenseBottomSheetDetails({Key? key, required this.expense})
+      : super(key: key);
 
   @override
-  _ExpenseBottomSheetDetailsState createState() => _ExpenseBottomSheetDetailsState();
+  _ExpenseBottomSheetDetailsState createState() =>
+      _ExpenseBottomSheetDetailsState();
 }
 
 class _ExpenseBottomSheetDetailsState extends State<ExpenseBottomSheetDetails> {
@@ -107,7 +110,8 @@ class _ExpenseBottomSheetDetailsState extends State<ExpenseBottomSheetDetails> {
                         callback: () => {
                           Provider.of<StateProvider>(context, listen: false)
                               .setEditSelectedDate(
-                            DateFormat('dd/MM/yyyy').format(widget.expense.date),
+                            DateFormat('dd/MM/yyyy')
+                                .format(widget.expense.date),
                           ),
                           Navigator.of(context).pop(),
                           showModalBottomSheet(
@@ -117,10 +121,6 @@ class _ExpenseBottomSheetDetailsState extends State<ExpenseBottomSheetDetails> {
                               expense: widget.expense,
                             ),
                           ),
-
-
-                          // EditExpenseBottomSheet.showEditExpenseBottomSheet(
-                          //     expense: expense, key: key, context: context)
                         },
                       ),
                       CircularIconBtn(
@@ -134,10 +134,13 @@ class _ExpenseBottomSheetDetailsState extends State<ExpenseBottomSheetDetails> {
                         ),
                         callback: () => {
                           showDialog(
-                              context: context,
-                              builder: (_) =>
-                                  deleteDialog(widget.expense.id, context),
-                              barrierDismissible: false),
+                                  context: context,
+                                  builder: (_) =>
+                                      deleteDialog(widget.expense.id, context),
+                                  barrierDismissible: false)
+                              .whenComplete(
+                            () => Navigator.of(context).pop(),
+                          ),
                         },
                       ),
                     ],

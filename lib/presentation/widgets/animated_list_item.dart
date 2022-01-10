@@ -21,7 +21,7 @@ class _AnimatedListItemState extends State<AnimatedListItem> with SingleTickerPr
   @override
   void initState() {
     _controller = AnimationController(
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 1),
       vsync: this,
     );
     _controller.forward();
