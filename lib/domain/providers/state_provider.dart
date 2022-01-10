@@ -7,14 +7,28 @@ class StateProvider extends ChangeNotifier {
   bool _isProcessing = true;
   List<Expense> _expensesList = [];
   num _totalExpenses = 0.0;
+  String _selectedDateEditBottomSheet = '';
+  String _selectedDateInsertBottomSheet = '';
 
+  String get selectedDateEditBottomSheet  => _selectedDateEditBottomSheet ;
+  String get selectedDateInsertBottomSheet  => _selectedDateInsertBottomSheet ;
   num get totalExpenses => _totalExpenses;
-
   bool get isProcessing => _isProcessing;
+  int get listLength => _expensesList.length;
 
   setIsProcessing(bool val) {
     _isProcessing = val;
     notifyListeners();
+  }
+
+  setEditSelectedDate(String date,{bool notify = true}){
+    _selectedDateEditBottomSheet  = date;
+    if (notify) notifyListeners();
+  }
+
+  setInsertSelectedDate(String date,{bool notify = true}){
+    _selectedDateInsertBottomSheet  = date;
+    if (notify) notifyListeners();
   }
 
   setExpensesList({bool notify = true}) async{
@@ -62,6 +76,4 @@ class StateProvider extends ChangeNotifier {
   }
 
   Expense getExpenseByIndex(int index) => _expensesList[index];
-
-  int get listLength => _expensesList.length;
 }

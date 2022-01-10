@@ -24,7 +24,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
 
     return MaterialApp(
       // useInheritedMediaQuery: true,
@@ -35,7 +34,7 @@ class MyApp extends StatelessWidget {
         primaryColor: const Color(0xffcbefef),
         textTheme: GoogleFonts.latoTextTheme(
           Theme.of(context)
-              .textTheme, // If this is not set, then ThemeData.light().textTheme is used.
+              .textTheme,
         ).copyWith(
           bodyText1: GoogleFonts.poppins(),
           bodyText2: GoogleFonts.poppins(),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:personal_expenses_app/domain/providers/state_provider.dart';
 import 'package:provider/provider.dart';
-import 'home_view.dart';
+import '../views/home_view.dart';
 
 AlertDialog deleteDialog(int id, BuildContext context) {
   return AlertDialog(

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:personal_expenses_app/domain/providers/state_provider.dart';
-import 'package:personal_expenses_app/presentation/widgets/icon_btn.dart';
+import 'package:personal_expenses_app/presentation/widgets/bottom_sheets/insert_expense_bottom_sheet.dart';
+import 'package:personal_expenses_app/presentation/widgets/animated_list_item.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
-import 'bottom_sheets/expense_details_bottom_sheet.dart';
-import 'bottom_sheets/insert_expense_bottom_sheet.dart';
+import 'package:personal_expenses_app/presentation/widgets/icon_btn.dart';
+import 'package:personal_expenses_app/domain/providers/state_provider.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -15,11 +14,6 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  List<GlobalKey<FormState>> formKeys = [
-    GlobalKey<FormState>(),
-    GlobalKey<FormState>()
-  ];
-
   _getExpenses() async {
     var provider = Provider.of<StateProvider>(context, listen: false);
     await provider.setExpensesList(notify: false);
@@ -78,8 +72,13 @@ class _HomeViewState extends State<HomeView> {
               size: 30,
             ),
             callback: () => {
-              AddExpenseBottomSheet.showAddExpenseBottomSheet(
-                  key: formKeys[0], context: context),
+              showModalBottomSheet(
+                isScrollControlled: true,
+                context: context,
+                builder: (context) => const AddExpenseBottomSheet(),
+              ).whenComplete(() =>
+                  Provider.of<StateProvider>(context, listen: false)
+                      .setInsertSelectedDate('', notify: true)),
             },
           ),
         ),
@@ -118,49 +117,22 @@ class _HomeViewState extends State<HomeView> {
       ),
     );
 
-    Container bottomListView(StateProvider provider) {
-      return Container(
-        margin: const EdgeInsets.only(left: 40.0, right: 40, bottom: 40),
-        child: ListView.builder(
-          itemCount: provider.listLength,
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          physics: const BouncingScrollPhysics(),
-          itemBuilder: (_, int index) {
-            var expense = provider.getExpenseByIndex(index);
-            return Card(
-              elevation: 6,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: ListTile(
-                title: Text(
-                  expense.expenseTitle,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Color(0xff484848)),
-                ),
-                subtitle: Text(
-                  DateFormat.yMMMd().format(expense.date).toString(),
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, color: Color(0xff484848)),
-                ),
-                trailing: Text(
-                  '${expense.amount} \$',
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, color: Color(0xff484848)),
-                ),
-                onTap: () => {
-                  ExpenseBottomSheetDetails.showDetailsBottomSheet(
-                      expense: expense, context: context, key: formKeys[1])
-                },
-              ),
-            );
-          },
-        ),
-      );
-    }
+
+    Widget bottomListView = Container(
+      margin: const EdgeInsets.only(left: 40.0, right: 40, bottom: 40),
+      child: ListView.builder(
+        itemCount: Provider.of<StateProvider>(context, listen: false).listLength,
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        physics: const BouncingScrollPhysics(),
+        itemBuilder: (_, int index) {
+          var expense = Provider.of<StateProvider>(context, listen: false)
+              .getExpenseByIndex(index);
+          return
+            AnimatedListItem(index: index,expense: expense,);
+        },
+      ),
+    );
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -179,7 +151,7 @@ class _HomeViewState extends State<HomeView> {
                         topCardSection,
                       ],
                     ),
-                    bottomListView(provider)
+                    bottomListView,
                   ],
                 ),
         ),
